@@ -52,6 +52,29 @@ const FaceClock: React.FC = () => {
         stroke="#ccc"
         strokeWidth="10"
       />
+      <g stroke="#272729" strokeWidth="1">
+        {[...Array(24)].map((_, i) => {
+          const angle = (i / 24) * 2 * Math.PI; // convert to radians
+          const radius = 190; // adjust for your clock size
+          const x = 200 + radius * Math.sin(angle); // 200 = centerX
+          const y = 200 - radius * Math.cos(angle); // 200 = centerY
+
+          return (
+            <text
+              fontWeight={i % 6 === 0 ? "bold" : "normal"}
+              fontSize={i % 6 === 0 ? 15 : 11}
+              key={i}
+              x={x}
+              y={y}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill="#44464a"
+              style={{ textShadow: "0 0 2px rgba(0, 0, 0, 0.1)" }}>
+              {i}
+            </text>
+          );
+        })}
+      </g>
 
       {/* Center dot */}
       <circle cx="200" cy="200" r="10" fill="#333" />
