@@ -1,8 +1,17 @@
 // src/components/FaceClock.tsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ClockHand from "./ClockHands";
 
 const FaceClock: React.FC = () => {
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const centerX = 200;
   const centerY = 200;
   const radius = 190;
@@ -13,13 +22,15 @@ const FaceClock: React.FC = () => {
     console.log("Play button clicked");
   };
 
-  const now = new Date();
-  const seconds = now.getSeconds();
-  const minutes = now.getMinutes();
-  const hours = now.getHours();
 
-  const minuteAngle = minutes * 6 + seconds * 0.1; // 360/60 + seconds smooth movement
-  const hourAngle = (hours % 12) * 30 + minutes * 0.5;
+  const hours = time.getHours();
+  const minutes = time.getMinutes();
+  const seconds = time.getSeconds();
+
+  const hourAngle = ((hours % 24) + minutes / 60) * 15 - 90; // 360/60 + seconds smooth movement
+  const minuteAngle = (minutes + seconds / 60) * 6 - 90;
+  
+
   return (
     <div className="mx-auto w-full max-w-[320px] sm:max-w-[480px] md:max-w-[600px] lg:max-w-[700px] xl:max-w-[800px]">
       <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
@@ -68,6 +79,7 @@ const FaceClock: React.FC = () => {
           stroke="#ccc"
           strokeWidth="10"
         />
+        {/* 24 numbers */}
         <g stroke="#272729" strokeWidth="1">
           {[...Array(24)].map((_, i) => {
             const angle = (i / 24) * 2 * Math.PI;

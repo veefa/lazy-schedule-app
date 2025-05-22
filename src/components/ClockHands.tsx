@@ -1,11 +1,13 @@
-type ClockHandProps = {
+import React from "react";
+
+interface ClockHandProps {
   angle: number;
   length: number;
   width: number;
   color: string;
   centerX: number;
   centerY: number;
-};
+}
 
 const ClockHand: React.FC<ClockHandProps> = ({
   angle,
@@ -15,21 +17,21 @@ const ClockHand: React.FC<ClockHandProps> = ({
   centerX,
   centerY,
 }) => {
-  // Calculate the end point of the hand
-  const rad = ((angle - 90) * Math.PI) / 180;
-  const x2 = centerX + length * Math.cos(rad);
-  const y2 = centerY + length * Math.sin(rad);
+  const rad = (angle * Math.PI) / 180;
+  const x = centerX + Math.cos(rad) * length;
+  const y = centerY + Math.sin(rad) * length;
 
   return (
     <line
       x1={centerX}
       y1={centerY}
-      x2={x2}
-      y2={y2}
+      x2={x}
+      y2={y}
       stroke={color}
       strokeWidth={width}
       strokeLinecap="round"
     />
   );
 };
+
 export default ClockHand;
