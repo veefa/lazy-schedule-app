@@ -64,25 +64,25 @@ const FaceClock: React.FC = () => {
     },
   ]);
 
-const [newTask, setNewTask] = useState({
-  name: "",
-  startHour: 0,
-  endHour: 1,
-  color: "#8b5cf6", // Violet as default
-});
+  const [newTask, setNewTask] = useState({
+    name: "",
+    startHour: 0,
+    endHour: 1,
+    color: "#8b5cf6", // Violet as default
+  });
 
-const handleAddTask = () => {
-  if (newTask.name && newTask.startHour < newTask.endHour) {
-    setTasks((prev) => [
-      ...prev,
-      {
-        ...newTask,
-        id: prev.length + 1,
-      },
-    ]);
-    setNewTask({ name: "", startHour: 0, endHour: 1, color: "#8b5cf6" });
-  }
-};
+  const handleAddTask = () => {
+    if (newTask.name && newTask.startHour < newTask.endHour) {
+      setTasks((prev) => [
+        ...prev,
+        {
+          ...newTask,
+          id: prev.length + 1,
+        },
+      ]);
+      setNewTask({ name: "", startHour: 0, endHour: 1, color: "#8b5cf6" });
+    }
+  };
 
   return (
     <div className="mx-auto w-full max-w-[320px] sm:max-w-[480px] md:max-w-[600px] lg:max-w-[700px] xl:max-w-[800px]">
@@ -190,60 +190,51 @@ const handleAddTask = () => {
         </g>
       </svg>
       <div className="space-y-2 mt-4 px-4">
-  <input
-    type="text"
-    placeholder="Task name"
-    className="px-2 py-1 border rounded w-full"
-    value={newTask.name}
-    onChange={(e) =>
-      setNewTask((prev) => ({ ...prev, name: e.target.value }))
-    }
-  />
-  <div className="flex gap-2">
-    <input
-      type="number"
-      placeholder="Start hour"
-      className="px-2 py-1 border rounded w-1/2"
-      value={newTask.startHour}
-      onChange={(e) =>
-        setNewTask((prev) => ({ ...prev, startHour: Number(e.target.value) }))
-      }
-      min={0}
-      max={23}
-    />
-    <input
-      type="number"
-      placeholder="End hour"
-      className="px-2 py-1 border rounded w-1/2"
-      value={newTask.endHour}
-      onChange={(e) =>
-        setNewTask((prev) => ({ ...prev, endHour: Number(e.target.value) }))
-      }
-      min={0}
-      max={23}
-    />
-  </div>
-  <button
-    onClick={handleAddTask}
-    className="bg-green-600 px-4 py-1 rounded text-white">
-    Add Task
-  </button>
-</div>
-      <button className="absolute inset-0" onClick={handleStart}>
-        {/* Play button (center circle with triangle) */}
-        <g onClick={handleStart}>
-          <circle cx={centerX} cy={centerY} r={20} fill="#333" />
-          {/* Play triangle */}
-          <polygon
-            points={`
-            ${centerX - 6},${centerY - 10}
-            ${centerX - 6},${centerY + 10}
-            ${centerX + 10},${centerY}
-          `}
-            fill="yellow"
+        <input
+          type="text"
+          placeholder="Task name"
+          className="px-2 py-1 border rounded w-full"
+          value={newTask.name}
+          onChange={(e) =>
+            setNewTask((prev) => ({ ...prev, name: e.target.value }))
+          }
+        />
+        <div className="flex gap-2">
+          <input
+            type="number"
+            placeholder="Start hour"
+            className="px-2 py-1 border rounded w-1/2"
+            value={newTask.startHour}
+            onChange={(e) =>
+              setNewTask((prev) => ({
+                ...prev,
+                startHour: Number(e.target.value),
+              }))
+            }
+            min={0}
+            max={23}
           />
-        </g>
-      </button>
+          <input
+            type="number"
+            placeholder="End hour"
+            className="px-2 py-1 border rounded w-1/2"
+            value={newTask.endHour}
+            onChange={(e) =>
+              setNewTask((prev) => ({
+                ...prev,
+                endHour: Number(e.target.value),
+              }))
+            }
+            min={0}
+            max={23}
+          />
+        </div>
+        <button
+          onClick={handleAddTask}
+          className="bg-green-600 px-4 py-1 rounded text-white">
+          Add Task
+        </button>
+      </div>
     </div>
   );
 };
