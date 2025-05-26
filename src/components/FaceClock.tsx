@@ -40,6 +40,49 @@ const FaceClock: React.FC = () => {
     backgroundColor = "#0b1d3a"; // night
     backgroundOpacity = 0.2;
   }
+  const [tasks, setTasks] = useState([
+    {
+      id: 1,
+      name: "Morning Routine",
+      startHour: 6,
+      endHour: 8,
+      color: "#22c55e",
+    },
+    {
+      id: 2,
+      name: "Work Session",
+      startHour: 9,
+      endHour: 17,
+      color: "#ef4444",
+    },
+    {
+      id: 3,
+      name: "Evening Study",
+      startHour: 18,
+      endHour: 20,
+      color: "#3b82f6",
+    },
+  ]);
+
+const [newTask, setNewTask] = useState({
+  name: "",
+  startHour: 0,
+  endHour: 1,
+  color: "#8b5cf6", // Violet as default
+});
+
+const handleAddTask = () => {
+  if (newTask.name && newTask.startHour < newTask.endHour) {
+    setTasks((prev) => [
+      ...prev,
+      {
+        ...newTask,
+        id: prev.length + 1,
+      },
+    ]);
+    setNewTask({ name: "", startHour: 0, endHour: 1, color: "#8b5cf6" });
+  }
+};
 
   return (
     <div className="mx-auto w-full max-w-[320px] sm:max-w-[480px] md:max-w-[600px] lg:max-w-[700px] xl:max-w-[800px]">
@@ -103,33 +146,18 @@ const FaceClock: React.FC = () => {
         </g>
 
         {/* Scheduled time blocks */}
-        <TimeBlockArc
-          startHour={22}
-          endHour={6}
-          radius={170}
-          centerX={centerX}
-          centerY={centerY}
-          color="white"
-          opacity={0.7}
-        />
-        <TimeBlockArc
-          startHour={9}
-          endHour={17}
-          radius={170}
-          centerX={centerX}
-          centerY={centerY}
-          color="red"
-          opacity={0.5}
-        />
-        <TimeBlockArc
-          startHour={18}
-          endHour={19}
-          radius={170}
-          centerX={centerX}
-          centerY={centerY}
-          color="#22c55e"
-          opacity={0.6}
-        />
+        {tasks.map((task) => (
+          <TimeBlockArc
+            key={task.id}
+            startHour={task.startHour}
+            endHour={task.endHour}
+            radius={170}
+            centerX={centerX}
+            centerY={centerY}
+            color={task.color}
+            opacity={0.5}
+          />
+        ))}
         {/* Hands */}
         <ClockHand
           angle={hourAngle}
@@ -161,6 +189,46 @@ const FaceClock: React.FC = () => {
           />
         </g>
       </svg>
+      <div className="space-y-2 mt-4 px-4">
+  <input
+    type="text"
+    placeholder="Task name"
+    className="px-2 py-1 border rounded w-full"
+    value={newTask.name}
+    onChange={(e) =>
+      setNewTask((prev) => ({ ...prev, name: e.target.value }))
+    }
+  />
+  <div className="flex gap-2">
+    <input
+      type="number"
+      placeholder="Start hour"
+      className="px-2 py-1 border rounded w-1/2"
+      value={newTask.startHour}
+      onChange={(e) =>
+        setNewTask((prev) => ({ ...prev, startHour: Number(e.target.value) }))
+      }
+      min={0}
+      max={23}
+    />
+    <input
+      type="number"
+      placeholder="End hour"
+      className="px-2 py-1 border rounded w-1/2"
+      value={newTask.endHour}
+      onChange={(e) =>
+        setNewTask((prev) => ({ ...prev, endHour: Number(e.target.value) }))
+      }
+      min={0}
+      max={23}
+    />
+  </div>
+  <button
+    onClick={handleAddTask}
+    className="bg-green-600 px-4 py-1 rounded text-white">
+    Add Task
+  </button>
+</div>
       <button className="absolute inset-0" onClick={handleStart}>
         {/* Play button (center circle with triangle) */}
         <g onClick={handleStart}>
