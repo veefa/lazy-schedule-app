@@ -1,12 +1,12 @@
 import React from "react";
+//import { Routes, Route } from "react-router-dom";
+//import Home from "./pages/Home";
 import FaceClock from "./components/FaceClock";
+//import Footer from "./components/Footer";
 
-const App: React.FC = () => {
-  return (
-    <main
-      className="flex flex-col justify-center items-center bg-slate-100 p-2 sm:p-4 lg:p-6 w-full min-h-dvh overflow-x-hidden"
-      aria-label="Lazy schedule clock main interface"
-    >
+const App: React.FC = () => (
+  <div className="flex flex-col min-h-screen">
+    <main className="flex flex-col flex-1 justify-center items-center bg-slate-100 p-2 sm:p-4 lg:p-6 w-full min-h-dvh overflow-x-hidden">
       {/* Main title */}
       <h1 className="mb-4 font-bold text-slate-900 text-2xl sm:text-3xl text-center">
         Lazy Schedule
@@ -21,8 +21,16 @@ const App: React.FC = () => {
       <div className="flex justify-center items-center w-96 sm:w-[30rem] h-96 sm:h-[30rem]">
         <FaceClock />
       </div>
+
+      {/* 
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/clock" element={<FaceClock />} />
+      </Routes>
+      */}
     </main>
-  );
-};
+    {/*<Footer /> Footer component */}
+  </div>
+);
 
 export default App;
