@@ -17,12 +17,6 @@ const FaceClock: React.FC = () => {
   const centerY = 200;
   const radius = 190;
 
-  // Dummy handler for play button
-  const handleStart = () => {
-    // TODO: Implement start logic
-    console.log("Play button clicked");
-  };
-
   const hours = time.getHours();
   const minutes = time.getMinutes();
   const seconds = time.getSeconds();
@@ -40,29 +34,15 @@ const FaceClock: React.FC = () => {
     backgroundColor = "#0b1d3a"; // night
     backgroundOpacity = 0.2;
   }
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      name: "Morning Routine",
-      startHour: 6,
-      endHour: 8,
-      color: "#22c55e",
-    },
-    {
-      id: 2,
-      name: "Work Session",
-      startHour: 9,
-      endHour: 17,
-      color: "#ef4444",
-    },
-    {
-      id: 3,
-      name: "Evening Study",
-      startHour: 18,
-      endHour: 20,
-      color: "#3b82f6",
-    },
-  ]);
+  type Task = {
+    id: number;
+    name: string;
+    startHour: number;
+    endHour: number;
+    color: string;
+  };
+
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const [newTask, setNewTask] = useState({
     name: "",
@@ -91,6 +71,12 @@ const FaceClock: React.FC = () => {
         viewBox="0 0 400 400"
         xmlns="http://www.w3.org/2000/svg"
         style={{ background: backgroundColor, borderRadius: "50%" }}>
+        {/* Background style path */}
+        <path
+          d="M305 162C305 140.187 299.975 118.667 290.314 99.1094C280.653 79.5521 266.616 62.4835 249.293 49.2277C231.969 35.9719 211.825 26.8853 190.422 22.6729C169.019 18.4605 146.934 19.2355 125.879 24.9379L163 162H305Z"
+          fill="#161F37"
+          fillOpacity="0.35"
+        />
         {/* Background with dynamic color and opacity */}
         <rect
           width="400"
@@ -146,18 +132,46 @@ const FaceClock: React.FC = () => {
         </g>
 
         {/* Scheduled time blocks */}
-        {tasks.map((task) => (
-          <TimeBlockArc
-            key={task.id}
-            startHour={task.startHour}
-            endHour={task.endHour}
-            radius={170}
-            centerX={centerX}
-            centerY={centerY}
-            color={task.color}
-            opacity={0.5}
-          />
-        ))}
+        {tasks.map((task, idx) => {
+          // Calculate the middle angle of the arc
+          const startAngle =
+            ((task.startHour / 24) * 360 - 90) * (Math.PI / 180);
+          const endAngle = ((task.endHour / 24) * 360 - 90) * (Math.PI / 180);
+          const midAngle = (startAngle + endAngle) / 2;
+          const arcRadius = 170 - idx * 12; // <-- Give each arc a unique radius
+          const textRadius = radius * 0.4; // 40% of the clock radius, close to center
+          const textX = centerX + Math.cos(midAngle) * textRadius;
+          const textY = centerY + Math.sin(midAngle) * textRadius;
+
+          return (
+            <React.Fragment key={task.id}>
+              <TimeBlockArc
+                startHour={task.startHour}
+                endHour={task.endHour}
+                radius={arcRadius} // <-- use arcRadius here!
+                centerX={centerX}
+                centerY={centerY}
+                color={task.color}
+                opacity={0.5}
+              />
+              <text
+                x={textX}
+                y={textY}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fontSize={13}
+                fontWeight="bold"
+                fill="#22223b"
+                style={{
+                  pointerEvents: "none",
+                  userSelect: "none",
+                  letterSpacing: 0.5,
+                }}>
+                {task.name}
+              </text>
+            </React.Fragment>
+          );
+        })}
         {/* Hands */}
         <ClockHand
           angle={hourAngle}
@@ -175,19 +189,8 @@ const FaceClock: React.FC = () => {
           centerX={centerX}
           centerY={centerY}
         />
-        {/* Play button (center circle with triangle) */}
-        <g onClick={handleStart}>
-          <circle cx={centerX} cy={centerY} r={20} fill="#333" />
-          {/* Play triangle */}
-          <polygon
-            points={`
-            ${centerX - 6},${centerY - 10}
-            ${centerX - 6},${centerY + 10}
-            ${centerX + 10},${centerY}
-          `}
-            fill="yellow"
-          />
-        </g>
+        {/* center dot*/}
+        <circle cx={centerX} cy={centerY} r={7} fill="#333" />
       </svg>
       <div className="space-y-2 mt-4 px-4">
         <input
@@ -202,38 +205,71 @@ const FaceClock: React.FC = () => {
         <div className="flex gap-2">
           <input
             type="number"
+            step="0.01"
             placeholder="Start hour"
             className="px-2 py-1 border rounded w-1/2"
             value={newTask.startHour}
-            onChange={(e) =>
+            onChange={(e) => {
+              let value = Number(e.target.value);
+              if (isNaN(value)) value = 0;
+              if (value < 0) value = 0;
+              if (value > 23.99) value = 23.99;
               setNewTask((prev) => ({
                 ...prev,
-                startHour: Number(e.target.value),
-              }))
-            }
+                startHour: value,
+              }));
+            }}
             min={0}
-            max={23}
+            max={23.99}
           />
           <input
             type="number"
+            step="0.01"
             placeholder="End hour"
             className="px-2 py-1 border rounded w-1/2"
             value={newTask.endHour}
-            onChange={(e) =>
+            onChange={(e) => {
+              let value = Number(e.target.value);
+              if (isNaN(value)) value = 1;
+              if (value < 0) value = 0;
+              if (value > 23.99) value = 23.99;
               setNewTask((prev) => ({
                 ...prev,
-                endHour: Number(e.target.value),
-              }))
-            }
+                endHour: value,
+              }));
+            }}
             min={0}
-            max={23}
+            max={23.99}
           />
         </div>
-        <button
-          onClick={handleAddTask}
-          className="bg-green-600 px-4 py-1 rounded text-white">
-          Add Task
-        </button>
+        <div className="flex gap-2">
+          <input
+            type="color"
+            className="p-0 border rounded w-10 h-10"
+            value={newTask.color}
+            onChange={(e) =>
+              setNewTask((prev) => ({ ...prev, color: e.target.value }))
+            }
+            title="Pick task color"
+          />
+          <button
+            onClick={handleAddTask}
+            className="flex-1 bg-green-600 px-4 py-1 rounded text-white"
+            disabled={
+              !newTask.name ||
+              newTask.startHour >= newTask.endHour ||
+              newTask.startHour < 0 ||
+              newTask.endHour > 23
+            }>
+            Add Task
+          </button>
+          <button
+            onClick={() => setTasks([])}
+            className="flex-1 bg-red-500 px-4 py-2 rounded text-white"
+            type="button">
+            Reset
+          </button>
+        </div>
       </div>
     </div>
   );

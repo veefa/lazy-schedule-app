@@ -9,6 +9,7 @@ interface TimeBlockArcProps {
   color: string;
   opacity?: number;
 }
+
 const TimeBlockArc: React.FC<TimeBlockArcProps> = ({
   startHour,
   endHour,
@@ -22,7 +23,7 @@ const TimeBlockArc: React.FC<TimeBlockArcProps> = ({
   const startAngle = (startHour * 15 - 90) * (Math.PI / 180);
   const endAngle = (endHour * 15 - 90) * (Math.PI / 180);
 
- // Arc coordinates
+  // Arc points
   const x1 = centerX + radius * Math.cos(startAngle);
   const y1 = centerY + radius * Math.sin(startAngle);
   const x2 = centerX + radius * Math.cos(endAngle);
@@ -30,11 +31,9 @@ const TimeBlockArc: React.FC<TimeBlockArcProps> = ({
 
   // Large arc flag
   let largeArcFlag = 0;
-  if (endHour > startHour) {
-    largeArcFlag = endHour - startHour > 12 ? 1 : 0;
-  } else {
-    largeArcFlag = 24 - startHour + endHour > 12 ? 1 : 0;
-  }
+  let arcLength = endHour - startHour;
+  if (arcLength < 0) arcLength += 24;
+  if (arcLength > 12) largeArcFlag = 1;
 
   return (
     <path

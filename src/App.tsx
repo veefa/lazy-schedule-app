@@ -13,9 +13,9 @@ const App: React.FC = () => {
       </h1>
 
       {/* Optional subtitle */}
-      {/* <p className="mb-6 text-slate-600 text-base sm:text-lg text-center">
+       <p className="mb-6 text-slate-600 text-base sm:text-lg text-center">
         Stay on time, effortlessly.
-      </p> */}
+      </p> 
 
       {/* Clock face component */}
       <div className="flex justify-center items-center w-96 sm:w-[30rem] h-96 sm:h-[30rem]">
