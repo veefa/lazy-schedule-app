@@ -52,7 +52,12 @@ const FaceClock: React.FC = () => {
   });
 
   const handleAddTask = () => {
-    if (newTask.name && newTask.startHour < newTask.endHour) {
+    if (
+      newTask.name &&
+      newTask.startHour !== newTask.endHour &&
+      newTask.startHour >= 0 &&
+      newTask.endHour <= 23.99
+    ) {
       setTasks((prev) => [
         ...prev,
         {
@@ -137,7 +142,18 @@ const FaceClock: React.FC = () => {
           const startAngle =
             ((task.startHour / 24) * 360 - 90) * (Math.PI / 180);
           const endAngle = ((task.endHour / 24) * 360 - 90) * (Math.PI / 180);
-          const midAngle = (startAngle + endAngle) / 2;
+
+          // Fix: handle arcs that cross midnight
+          let midAngle;
+          if (task.endHour > task.startHour) {
+            midAngle = (startAngle + endAngle) / 2;
+          } else {
+            // Arc crosses midnight
+            const start = (task.startHour / 24) * 360;
+            const end = ((task.endHour + 24) / 24) * 360;
+            const mid = (start + end) / 2;
+            midAngle = ((mid - 90) * Math.PI) / 180;
+          }
           const arcRadius = 170 - idx * 12; // <-- Give each arc a unique radius
           const textRadius = radius * 0.4; // 40% of the clock radius, close to center
           const textX = centerX + Math.cos(midAngle) * textRadius;
@@ -241,8 +257,7 @@ const FaceClock: React.FC = () => {
             min={0}
             max={23.99}
           />
-        </div>
-        <div className="flex gap-2">
+          {/* Color picker for task */}
           <input
             type="color"
             className="p-0 border rounded w-10 h-10"
@@ -252,19 +267,29 @@ const FaceClock: React.FC = () => {
             }
             title="Pick task color"
           />
+        </div>
+        <div className="flex gap-2">
           <button
             onClick={handleAddTask}
             className="flex-1 bg-green-600 px-4 py-1 rounded text-white"
             disabled={
               !newTask.name ||
-              newTask.startHour >= newTask.endHour ||
+              newTask.startHour === newTask.endHour ||
               newTask.startHour < 0 ||
-              newTask.endHour > 23
+              newTask.endHour > 23.99
             }>
             Add Task
           </button>
           <button
-            onClick={() => setTasks([])}
+            onClick={() => {
+              setTasks([]);
+              setNewTask({
+                name: "",
+                startHour: 0,
+                endHour: 1,
+                color: "#8b5cf6",
+              });
+            }}
             className="flex-1 bg-red-500 px-4 py-2 rounded text-white"
             type="button">
             Reset
